@@ -8,19 +8,19 @@ class AttendanceTracker {
         this.attendanceRecords = [];
         this.requiredPercentage = 75;
         
+        // Hardcoded Appwrite configuration
+        this.config = {
+            projectId: 'sqre',
+            databaseId: 'attendance-db',
+            endpoint: 'https://fra.cloud.appwrite.io/v1'
+        };
+        
         this.init();
     }
 
     async init() {
-        // Check if Appwrite config exists
-        const config = this.getAppwriteConfig();
-        if (!config) {
-            this.showSetupSection();
-            return;
-        }
-
-        // Initialize Appwrite
-        this.initializeAppwrite(config);
+        // Initialize Appwrite with hardcoded config
+        this.initializeAppwrite(this.config);
 
         // Check if user is logged in
         try {
@@ -33,17 +33,6 @@ class AttendanceTracker {
         }
     }
 
-    getAppwriteConfig() {
-        const projectId = localStorage.getItem('appwrite_project_id');
-        const databaseId = localStorage.getItem('appwrite_database_id');
-        const endpoint = localStorage.getItem('appwrite_endpoint');
-        
-        if (projectId && databaseId && endpoint) {
-            return { projectId, databaseId, endpoint };
-        }
-        return null;
-    }
-
     initializeAppwrite(config) {
         this.appwrite = new Appwrite.Client()
             .setEndpoint(config.endpoint)
@@ -52,11 +41,6 @@ class AttendanceTracker {
         this.databases = new Appwrite.Databases(this.appwrite);
         this.account = new Appwrite.Account(this.appwrite);
         this.databaseId = config.databaseId;
-    }
-
-    showSetupSection() {
-        document.getElementById('setupSection').style.display = 'block';
-        this.hideOtherSections(['setupSection']);
     }
 
     showLoginSection() {
@@ -86,7 +70,7 @@ class AttendanceTracker {
     }
 
     hideOtherSections(except = []) {
-        const sections = ['setupSection', 'loginSection', 'subjectSetupSection', 'loadingSection', 'errorSection', 'mainContent'];
+        const sections = ['loginSection', 'subjectSetupSection', 'loadingSection', 'errorSection', 'mainContent'];
         sections.forEach(section => {
             if (!except.includes(section)) {
                 document.getElementById(section).style.display = 'none';
@@ -241,17 +225,8 @@ class AttendanceTracker {
         const alert = document.createElement('div');
         alert.className = `alert alert-${type}`;
         
-        const iconMap = {
-            success: 'ph-check-circle',
-            warning: 'ph-warning',
-            destructive: 'ph-x-circle'
-        };
-
         alert.innerHTML = `
-            <div class="alert-content">
-                <i class="ph ${iconMap[type]} alert-icon"></i>
-                <div class="alert-text">${message}</div>
-            </div>
+            <div class="alert-text">${message}</div>
         `;
 
         // Add to the main content or current visible section
@@ -322,15 +297,13 @@ class AttendanceTracker {
                     </div>
                     <div class="action-buttons">
                         <button class="btn btn-success" onclick="tracker.markAttendance('${subject.$id}', true)">
-                            <i class="ph ph-check"></i>
                             Present
                         </button>
                         <button class="btn btn-destructive" onclick="tracker.markAttendance('${subject.$id}', false)">
-                            <i class="ph ph-x"></i>
                             Absent
                         </button>
                         <button class="btn btn-ghost" onclick="tracker.undoLastEntry('${subject.$id}')">
-                            <i class="ph ph-arrow-counter-clockwise"></i>
+                            Undo
                         </button>
                     </div>
                 </div>
@@ -358,33 +331,24 @@ class AttendanceTracker {
         if (stats.overallPercentage < 65) {
             warningDiv.innerHTML = `
                 <div class="alert alert-destructive">
-                    <div class="alert-content">
-                        <i class="ph ph-warning-circle alert-icon"></i>
-                        <div class="alert-text">
-                            <strong>Critical:</strong> Your attendance is below 65%. You need to attend ${stats.mustAttend} more classes to reach 75%.
-                        </div>
+                    <div class="alert-text">
+                        <strong>Critical:</strong> Your attendance is below 65%. You need to attend ${stats.mustAttend} more classes to reach 75%.
                     </div>
                 </div>
             `;
         } else if (stats.overallPercentage < 75) {
             warningDiv.innerHTML = `
                 <div class="alert alert-warning">
-                    <div class="alert-content">
-                        <i class="ph ph-warning alert-icon"></i>
-                        <div class="alert-text">
-                            <strong>Warning:</strong> You need to attend ${stats.mustAttend} more classes to reach the 75% requirement.
-                        </div>
+                    <div class="alert-text">
+                        <strong>Warning:</strong> You need to attend ${stats.mustAttend} more classes to reach the 75% requirement.
                     </div>
                 </div>
             `;
         } else {
             warningDiv.innerHTML = `
                 <div class="alert alert-success">
-                    <div class="alert-content">
-                        <i class="ph ph-check-circle alert-icon"></i>
-                        <div class="alert-text">
-                            <strong>Great job!</strong> You're meeting the attendance requirement. You can safely miss ${stats.safeToMiss} more classes.
-                        </div>
+                    <div class="alert-text">
+                        <strong>Great job!</strong> You're meeting the attendance requirement. You can safely miss ${stats.safeToMiss} more classes.
                     </div>
                 </div>
             `;
@@ -393,24 +357,6 @@ class AttendanceTracker {
 }
 
 // Global functions for UI interactions
-function saveAppwriteConfig() {
-    const projectId = document.getElementById('projectId').value.trim();
-    const databaseId = document.getElementById('databaseId').value.trim();
-    const endpoint = document.getElementById('endpoint').value.trim();
-
-    if (!projectId || !databaseId || !endpoint) {
-        alert('Please fill in all fields');
-        return;
-    }
-
-    localStorage.setItem('appwrite_project_id', projectId);
-    localStorage.setItem('appwrite_database_id', databaseId);
-    localStorage.setItem('appwrite_endpoint', endpoint);
-
-    // Restart the app
-    location.reload();
-}
-
 async function loginUser() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;

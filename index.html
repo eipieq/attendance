@@ -5,15 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendance Tracker</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
     <div class="container">
         <header class="header">
             <div class="header-content">
-                <div class="header-icon">
-                    <i class="ph ph-graduation-cap"></i>
-                </div>
                 <div>
                     <h1 class="header-title">Attendance Dashboard</h1>
                     <p class="header-subtitle">Stay on track with your 75% attendance requirement</p>
@@ -22,36 +18,24 @@
             
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="ph ph-target"></i>
-                    </div>
                     <div class="stat-content">
                         <div class="stat-label">Required Attendance</div>
                         <div class="stat-value">75%</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="ph ph-calendar"></i>
-                    </div>
                     <div class="stat-content">
                         <div class="stat-label">Total Classes</div>
                         <div class="stat-value" id="totalClasses">170</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="ph ph-check-circle"></i>
-                    </div>
                     <div class="stat-content">
                         <div class="stat-label">Classes Attended</div>
                         <div class="stat-value" id="totalAttended">0</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="ph ph-chart-pie"></i>
-                    </div>
                     <div class="stat-content">
                         <div class="stat-label">Overall Attendance</div>
                         <div class="stat-value" id="overallPercentage">0%</div>
@@ -60,37 +44,10 @@
             </div>
         </header>
 
-        <!-- Setup Section -->
-        <div id="setupSection" class="setup-section" style="display: none;">
-            <div class="setup-card">
-                <div class="setup-header">
-                    <i class="ph ph-gear"></i>
-                    <h2>Setup Your Appwrite Connection</h2>
-                </div>
-                <div class="form-group">
-                    <label for="projectId">Project ID</label>
-                    <input type="text" id="projectId" placeholder="Enter your Appwrite Project ID">
-                </div>
-                <div class="form-group">
-                    <label for="databaseId">Database ID</label>
-                    <input type="text" id="databaseId" placeholder="Enter your Database ID (attendance-db)">
-                </div>
-                <div class="form-group">
-                    <label for="endpoint">Endpoint URL</label>
-                    <input type="text" id="endpoint" placeholder="https://cloud.appwrite.io/v1" value="https://cloud.appwrite.io/v1">
-                </div>
-                <button class="btn btn-primary" onclick="saveAppwriteConfig()">
-                    <i class="ph ph-link"></i>
-                    Connect to Appwrite
-                </button>
-            </div>
-        </div>
-
         <!-- Login Section -->
         <div id="loginSection" class="setup-section" style="display: none;">
             <div class="setup-card">
                 <div class="setup-header">
-                    <i class="ph ph-user"></i>
                     <h2>Login or Sign Up</h2>
                 </div>
                 <div class="form-group">
@@ -102,14 +59,8 @@
                     <input type="password" id="password" placeholder="Enter your password">
                 </div>
                 <div class="button-group">
-                    <button class="btn btn-primary" onclick="loginUser()">
-                        <i class="ph ph-sign-in"></i>
-                        Login
-                    </button>
-                    <button class="btn btn-secondary" onclick="signupUser()">
-                        <i class="ph ph-user-plus"></i>
-                        Sign Up
-                    </button>
+                    <button class="btn btn-primary" onclick="loginUser()">Login</button>
+                    <button class="btn btn-secondary" onclick="signupUser()">Sign Up</button>
                 </div>
             </div>
         </div>
@@ -118,21 +69,16 @@
         <div id="subjectSetupSection" class="setup-section" style="display: none;">
             <div class="setup-card">
                 <div class="setup-header">
-                    <i class="ph ph-books"></i>
                     <h2>Setup Your Subjects</h2>
                 </div>
                 <p class="setup-description">Click the button below to create your subjects in the database:</p>
-                <button class="btn btn-primary" onclick="setupSubjects()">
-                    <i class="ph ph-plus"></i>
-                    Create Default Subjects
-                </button>
+                <button class="btn btn-primary" onclick="setupSubjects()">Create Default Subjects</button>
             </div>
         </div>
 
         <!-- Loading Section -->
         <div id="loadingSection" class="loading-section" style="display: none;">
             <div class="loading-content">
-                <i class="ph ph-spinner loading-spinner"></i>
                 <div class="loading-text">Loading your data...</div>
             </div>
         </div>
@@ -140,7 +86,6 @@
         <!-- Error Section -->
         <div id="errorSection" class="error-section" style="display: none;">
             <div class="error-content">
-                <i class="ph ph-warning-circle"></i>
                 <div class="error-text"></div>
             </div>
         </div>
@@ -153,7 +98,6 @@
 
             <div class="summary-section">
                 <div class="summary-header">
-                    <i class="ph ph-chart-bar"></i>
                     <h2>Semester Summary</h2>
                 </div>
                 <div class="summary-stats">
