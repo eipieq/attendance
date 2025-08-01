@@ -14,56 +14,25 @@
         <!-- Landing Page -->
         <div id="landingPage" class="landing-page">
             <div class="landing-container">
-                <div class="landing-left">
-                    <h1 class="landing-title">CourseFlow</h1>
-                    <p class="landing-subtitle">Never miss the 75% attendance requirement again</p>
-                    
-                    <div class="features-list">
-                        <div class="feature">
-                            <span class="feature-icon">📊</span>
-                            <span>Real-time tracking across all subjects</span>
-                        </div>
-                        <div class="feature">
-                            <span class="feature-icon">⚠️</span>
-                            <span>Smart alerts for attendance thresholds</span>
-                        </div>
-                        <div class="feature">
-                            <span class="feature-icon">📈</span>
-                            <span>Calculate exactly how many classes you can miss</span>
-                        </div>
-                    </div>
-                </div>
+                <h1 class="landing-title">CourseFlow</h1>
+                <p class="landing-subtitle">Track attendance. Stay above 75%.</p>
                 
-                <div class="landing-right">
-                    <div class="auth-card">
-                        <div id="loginForm">
-                            <h3>Welcome back</h3>
-                            <div class="form-group">
-                                <input type="email" id="email" placeholder="Email">
-                            </div>
-                            <div class="form-group">
-                                <input type="password" id="password" placeholder="Password">
-                            </div>
-                            <button class="btn btn-primary btn-full" onclick="loginUser()">Sign In</button>
-                            <p class="auth-switch">Don't have an account? <a href="#" onclick="showSignupForm()">Sign up</a></p>
+                <div class="auth-card">
+                    <div id="loginForm">
+                        <input type="email" id="email" placeholder="Email">
+                        <input type="password" id="password" placeholder="Password">
+                        <button class="btn btn-primary btn-full" onclick="loginUser()">SIGN IN</button>
+                        <p class="auth-switch">New here? <a href="#" onclick="showSignupForm()">Sign up</a></p>
+                    </div>
+                    
+                    <div id="signupForm" style="display: none;">
+                        <input type="email" id="signupEmail" placeholder="Email">
+                        <input type="password" id="signupPassword" placeholder="Password (min. 8 characters)">
+                        <div id="nameField" style="display: none;">
+                            <input type="text" id="signupName" placeholder="Full name">
                         </div>
-                        
-                        <div id="signupForm" style="display: none;">
-                            <h3>Create account</h3>
-                            <div class="form-group">
-                                <input type="email" id="signupEmail" placeholder="Email">
-                            </div>
-                            <div class="form-group">
-                                <input type="password" id="signupPassword" placeholder="Password (min. 8 characters)">
-                            </div>
-                            <div id="nameField" style="display: none;">
-                                <div class="form-group">
-                                    <input type="text" id="signupName" placeholder="Full name">
-                                </div>
-                            </div>
-                            <button class="btn btn-primary btn-full" onclick="signupUser()">Continue</button>
-                            <p class="auth-switch">Already have an account? <a href="#" onclick="showLoginForm()">Sign in</a></p>
-                        </div>
+                        <button class="btn btn-primary btn-full" onclick="signupUser()">CONTINUE</button>
+                        <p class="auth-switch">Have an account? <a href="#" onclick="showLoginForm()">Sign in</a></p>
                     </div>
                 </div>
             </div>

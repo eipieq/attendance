@@ -53,77 +53,57 @@ body {
 }
 
 .landing-container {
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 80px;
-    max-width: 1000px;
+    text-align: center;
+    max-width: 400px;
     width: 100%;
-    align-items: center;
-}
-
-.landing-left {
-    padding-right: 20px;
 }
 
 .landing-title {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 3.5rem;
+    font-size: 3rem;
     font-weight: 700;
     color: hsl(var(--foreground));
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     letter-spacing: -0.02em;
 }
 
 .landing-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 400;
     color: hsl(var(--muted-foreground));
-    margin-bottom: 40px;
-    line-height: 1.6;
-}
-
-.features-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.feature {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 1rem;
-    color: hsl(var(--foreground));
-}
-
-.feature-icon {
-    font-size: 1.25rem;
-    width: 24px;
-    text-align: center;
-}
-
-.landing-right {
-    display: flex;
-    justify-content: center;
+    margin-bottom: 32px;
+    line-height: 1.4;
 }
 
 .auth-card {
     background-color: hsl(var(--card));
     border: 1px solid hsl(var(--border));
     border-radius: 12px;
-    padding: 32px 28px;
-    width: 100%;
-    max-width: 360px;
+    padding: 24px;
     box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
 }
 
-.auth-card h3 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: hsl(var(--foreground));
-    margin-bottom: 24px;
-    text-align: center;
+.auth-card input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    font-weight: 400;
+    background-color: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    border-radius: 8px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease-in-out;
+}
+
+.auth-card input:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+.auth-card input::placeholder {
+    color: hsl(var(--muted-foreground));
+    font-weight: 400;
 }
 
 .auth-switch {
@@ -367,7 +347,9 @@ body {
     width: 100%;
     padding: 12px 16px;
     font-size: 0.95rem;
-    font-weight: 500;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
 }
 
 .btn-small {
@@ -648,22 +630,12 @@ body {
         padding: 16px;
     }
     
-    .landing-container {
-        grid-template-columns: 1fr;
-        gap: 40px;
-        text-align: center;
-    }
-    
-    .landing-left {
-        padding-right: 0;
-    }
-    
     .landing-title {
         font-size: 2.5rem;
     }
     
     .auth-card {
-        padding: 24px 20px;
+        padding: 20px;
     }
     
     .header {
