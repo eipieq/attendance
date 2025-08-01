@@ -602,7 +602,8 @@
                             subject_id: subjectId,
                             date: now,
                             status: status,
-                            notes: ''
+                            notes: '',
+                            created_at: now
                         }
                     );
 
@@ -851,6 +852,7 @@
             ];
 
             try {
+                const now = new Date().toISOString();
                 for (const subject of defaultSubjects) {
                     await tracker.databases.createDocument(
                         tracker.databaseId,
@@ -860,7 +862,9 @@
                             user_id: tracker.user.$id,
                             name: subject.name,
                             total_classes: subject.total_classes,
-                            semester: 'Spring 2025'
+                            semester: 'Spring 2025',
+                            created_at: now,
+                            updated_at: now
                         }
                     );
                 }
