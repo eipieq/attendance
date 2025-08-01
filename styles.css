@@ -27,7 +27,7 @@
 
 body {
     font-family: 'TikTok Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    background-color: hsl(var(--background));
+    background-color: hsl(var(--muted));
     color: hsl(var(--foreground));
     line-height: 1.5;
     font-weight: 400;
@@ -149,18 +149,17 @@ body {
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
     padding: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .header-content {
-    margin-bottom: 16px;
+    margin-bottom: 0;
 }
 
 .header-main {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
 }
 
 .header-actions {
@@ -169,10 +168,10 @@ body {
     gap: 12px;
 }
 
-.user-email {
+.user-name {
     font-size: 0.875rem;
-    font-weight: 500;
-    color: hsl(var(--muted-foreground));
+    font-weight: 600;
+    color: hsl(var(--foreground));
 }
 
 .header-title {
@@ -189,15 +188,24 @@ body {
     font-weight: 500;
 }
 
+/* Stats section */
+.stats-section {
+    margin-bottom: 16px;
+}
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 8px;
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 16px;
 }
 
 .stat-card {
     padding: 12px;
-    background-color: hsl(var(--muted) / 0.6);
+    background-color: hsl(var(--muted) / 0.4);
     border-radius: var(--radius);
     border: 1px solid hsl(var(--border));
 }
@@ -210,7 +218,7 @@ body {
     font-size: 0.75rem;
     color: hsl(var(--muted-foreground));
     margin-bottom: 2px;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.025em;
 }
@@ -365,7 +373,9 @@ body {
 .btn-small {
     padding: 6px 12px;
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
 }
 
 .button-group {
@@ -430,27 +440,30 @@ body {
 }
 
 .subject-header {
-    padding: 16px;
+    padding: 12px 16px;
     background-color: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
 }
 
 .subject-name {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 4px;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
 }
 
 .subject-stats {
     display: flex;
     justify-content: space-between;
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: 0.75rem;
+    font-weight: 600;
     opacity: 0.9;
+    text-transform: uppercase;
 }
 
 .subject-body {
-    padding: 16px;
+    padding: 12px 16px;
 }
 
 /* Progress bar */
@@ -499,32 +512,33 @@ body {
 /* Subject details */
 .subject-details {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-bottom: 16px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
 }
 
 .detail-item {
-    padding: 10px;
-    background-color: hsl(var(--muted) / 0.6);
+    padding: 8px 6px;
+    background-color: hsl(var(--muted) / 0.4);
     border-radius: var(--radius);
     text-align: center;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 2px;
 }
 
 .detail-value {
-    font-size: 1.25rem;
+    font-size: 0.875rem;
     font-weight: 700;
     color: hsl(var(--foreground));
 }
 
 .detail-label {
-    font-size: 0.75rem;
+    font-size: 0.625rem;
     color: hsl(var(--muted-foreground));
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.025em;
 }
@@ -532,15 +546,20 @@ body {
 /* Action buttons */
 .action-buttons {
     display: flex;
-    gap: 6px;
+    gap: 4px;
 }
 
 .action-buttons .btn {
     flex: 1;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    padding: 8px 4px;
 }
 
 .action-buttons .btn-ghost {
-    flex: 0.4;
+    flex: 0.6;
 }
 
 /* Summary section */
@@ -668,11 +687,16 @@ body {
     }
     
     .subject-header {
-        padding: 12px;
+        padding: 10px 12px;
     }
     
     .subject-body {
-        padding: 12px;
+        padding: 10px 12px;
+    }
+    
+    .subject-details {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
     }
     
     .summary-section {
@@ -690,6 +714,7 @@ body {
     
     .action-buttons {
         flex-direction: column;
+        gap: 6px;
     }
     
     .action-buttons .btn {

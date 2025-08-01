@@ -27,7 +27,7 @@ class AttendanceTracker {
         try {
             this.user = await this.account.get();
             console.log('User logged in:', this.user.name);
-            document.getElementById('userEmail').textContent = this.user.email;
+            document.getElementById('userName').textContent = this.user.name || this.user.email;
             await this.loadData();
         } catch (error) {
             console.log('User not logged in');
@@ -62,6 +62,7 @@ class AttendanceTracker {
 
     showMainContent() {
         document.getElementById('appHeader').style.display = 'block';
+        document.getElementById('statsSection').style.display = 'block';
         document.getElementById('mainContent').style.display = 'block';
         this.hideOtherSections(['mainContent']);
     }
@@ -80,9 +81,10 @@ class AttendanceTracker {
             }
         });
         
-        // Also hide app header unless we're showing main content
+        // Also hide app header and stats unless we're showing main content
         if (!except.includes('mainContent')) {
             document.getElementById('appHeader').style.display = 'none';
+            document.getElementById('statsSection').style.display = 'none';
         }
     }
 
