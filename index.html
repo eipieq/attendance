@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .semester-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .info-card h3 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .info-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .setup-form {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .setup-form h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .subject-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .subject-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .subject-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subject-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .subject-body {
+            padding: 20px;
+        }
+
+        .attendance-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .attendance-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .attendance-fill.good {
+            background: linear-gradient(90deg, #28a745, #20c997);
+        }
+
+        .attendance-fill.warning {
+            background: linear-gradient(90deg, #ffc107, #fd7e14);
+        }
+
+        .attendance-fill.danger {
+            background: linear-gradient(90deg, #dc3545, #e74c3c);
+        }
+
+        .attendance-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .detail-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-present {
+            flex: 1;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-present:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-absent {
+            flex: 1;
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            color: white;
+        }
+
+        .btn-absent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-undo {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            flex: 0.5;
+        }
+
+        .btn-undo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .summary-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #495057;
+            text-align: center;
+        }
+
+        .overall-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .warning-message {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .danger-message {
+            background: linear-gradient(135deg, #f8d7da, #fab1a0);
+            border: 1px solid #dc3545;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .subjects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .semester-info {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Attendance Dashboard</h1>
+            <p>Stay on track with your 75% attendance requirement!</p>
+            
+            <div class="semester-info">
+                <div class="info-card">
+                    <h3>Required Attendance</h3>
+                    <div class="value">75%</div>
+                </div>
+                <div class="info-card">
+                    <h3>Total Classes</h3>
+                    <div class="value" id="totalClasses">170</div>
+                </div>
+                <div class="info-card">
+                    <h3>Classes Attended</h3>
+                    <div class="value" id="totalAttended">0</div>
+                </div>
+                <div class="info-card">
+                    <h3>Overall Attendance</h3>
+                    <div class="value" id="overallPercentage">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="setupSection" class="setup-form" style="display: none;">
+            <h2>🚀 Setup Your Appwrite Connection</h2>
+            <div class="form-group">
+                <label for="projectId">Project ID</label>
+                <input type="text" id="projectId" placeholder="Enter your Appwrite Project ID">
+            </div>
+            <div class="form-group">
+                <label for="databaseId">Database ID</label>
+                <input type="text" id="databaseId" placeholder="Enter your Database ID (attendance-db)">
+            </div>
+            <div class="form-group">
+                <label for="endpoint">Endpoint URL</label>
+                <input type="text" id="endpoint" placeholder="https://cloud.appwrite.io/v1" value="https://cloud.appwrite.io/v1">
+            </div>
+            <button class="btn btn-primary" onclick="saveAppwriteConfig()">Connect to Appwrite</button>
+        </div>
+
+        <div id="loginSection" class="setup-form" style="display: none;">
+            <h2>🔐 Login or Sign Up</h2>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="loginUser()">Login</button>
+                <button class="btn" style="background: #28a745; color: white;" onclick="signupUser()">Sign Up</button>
+            </div>
+        </div>
+
+        <div id="subjectSetupSection" class="setup-form" style="display: none;">
+            <h2>📚 Setup Your Subjects</h2>
+            <p>Click the button below to create your subjects in the database:</p>
+            <button class="btn btn-primary" onclick="setupSubjects()">Create Default Subjects</button>
+        </div>
+
+        <div id="loadingSection" class="loading" style="display: none;">
+            <div>⏳ Loading your data...</div>
+        </div>
+
+        <div id="errorSection" class="error" style="display: none;"></div>
+
+        <div id="mainContent" style="display: none;">
+            <div class="main-content">
+                <div class="subjects-grid" id="subjectsGrid">
+                    <!-- Subject cards will be dynamically generated -->
+                </div>
+
+                <div class="summary-section">
+                    <h2 class="summary-title">📊 Semester Summary</h2>
+                    <div class="overall-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="safeToMiss">0</div>
+                            <div class="stat-label">Classes Safe to Miss</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="mustAttend">170</div>
+                            <div class="stat-label">Must Attend Remaining</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="daysToTarget">0</div>
+                            <div class="stat-label">Days to 75% Target</div>
+                        </div>
+                    </div>
+                    <div id="warningMessage"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appwrite SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@15.0.0"></script>
+
+    <script>
+        class AttendanceTracker {
+            constructor() {
+                this.appwrite = null;
+                this.databases = null;
+                this.account = null;
+                this.user = null;
+                this.subjects = [];
+                this.attendanceRecords = [];
+                this.requiredPercentage = 75;
+                
+                this.init();
+            }
+
+            async init() {
+                // Check if Appwrite config exists
+                const config = this.getAppwriteConfig();
+                if (!config) {
+                    this.showSetupSection();
+                    return;
+                }
+
+                // Initialize Appwrite
+                this.initializeAppwrite(config);
+
+                // Check if user is logged in
+                try {
+                    this.user = await this.account.get();
+                    console.log('User logged in:', this.user.name);
+                    await this.loadData();
+                } catch (error) {
+                    console.log('User not logged in');
+                    this.showLoginSection();
+                }
+            }
+
+            getAppwriteConfig() {
+                const projectId = localStorage.getItem('appwrite_project_id');
+                const databaseId = localStorage.getItem('appwrite_database_id');
+                const endpoint = localStorage.getItem('appwrite_endpoint');
+                
+                if (projectId && databaseId && endpoint) {
+                    return { projectId, databaseId, endpoint };
+                }
+                return null;
+            }
+
+            initializeAppwrite(config) {
+                this.appwrite = new Appwrite.Client()
+                    .setEndpoint(config.endpoint)
+                    .setProject(config.projectId);
+
+                this.databases = new Appwrite.Databases(this.appwrite);
+                this.account = new Appwrite.Account(this.appwrite);
+                this.databaseId = config.databaseId;
+            }
+
+            showSetupSection() {
+                document.getElementById('setupSection').style.display = 'block';
+                this.hideOtherSections(['setupSection']);
+            }
+
+            showLoginSection() {
+                document.getElementById('loginSection').style.display = 'block';
+                this.hideOtherSections(['loginSection']);
+            }
+
+            showSubjectSetupSection() {
+                document.getElementById('subjectSetupSection').style.display = 'block';
+                this.hideOtherSections(['subjectSetupSection']);
+            }
+
+            showLoadingSection() {
+                document.getElementById('loadingSection').style.display = 'block';
+                this.hideOtherSections(['loadingSection']);
+            }
+
+            showMainContent() {
+                document.getElementById('mainContent').style.display = 'block';
+                this.hideOtherSections(['mainContent']);
+            }
+
+            showError(message) {
+                document.getElementById('errorSection').textContent = message;
+                document.getElementById('errorSection').style.display = 'block';
+                this.hideOtherSections(['errorSection']);
+            }
+
+            hideOtherSections(except = []) {
+                const sections = ['setupSection', 'loginSection', 'subjectSetupSection', 'loadingSection', 'errorSection', 'mainContent'];
+                sections.forEach(section => {
+                    if (!except.includes(section)) {
+                        document.getElementById(section).style.display = 'none';
+                    }
+                });
+            }
+
+            async loadData() {
+                try {
+                    this.showLoadingSection();
+                    
+                    // Load subjects
+                    const subjectsResponse = await this.databases.listDocuments(
+                        this.databaseId,
+                        'subjects',
+                        [
+                            Appwrite.Query.equal('user_id', this.user.$id),
+                            Appwrite.Query.equal('semester', 'Spring 2025')
+                        ]
+                    );
+
+                    if (subjectsResponse.documents.length === 0) {
+                        this.showSubjectSetupSection();
+                        return;
+                    }
+
+                    this.subjects = subjectsResponse.documents;
+
+                    // Load attendance records
+                    const recordsResponse = await this.databases.listDocuments(
+                        this.databaseId,
+                        'attendance_records',
+                        [Appwrite.Query.equal('user_id', this.user.$id)]
+                    );
+
+                    this.attendanceRecords = recordsResponse.documents;
+                    
+                    this.showMainContent();
+                    this.render();
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    this.showError('Failed to load data: ' + error.message);
+                }
+            }
+
+            async markAttendance(subjectId, isPresent) {
+                try {
+                    const status = isPresent ? 'present' : 'absent';
+                    const now = new Date().toISOString();
+
+                    await this.databases.createDocument(
+                        this.databaseId,
+                        'attendance_records',
+                        Appwrite.ID.unique(),
+                        {
+                            user_id: this.user.$id,
+                            subject_id: subjectId,
+                            date: now,
+                            status: status,
+                            notes: ''
+                        }
+                    );
+
+                    // Reload data
+                    await this.loadData();
+                } catch (error) {
+                    console.error('Error marking attendance:', error);
+                    alert('Failed to mark attendance: ' + error.message);
+                }
+            }
+
+            async undoLastEntry(subjectId) {
+                try {
+                    // Find the most recent record for this subject
+                    const records = this.attendanceRecords
+                        .filter(record => record.subject_id === subjectId)
+                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                    if (records.length === 0) {
+                        alert('No records to undo for this subject');
+                        return;
+                    }
+
+                    const lastRecord = records[0];
+                    await this.databases.deleteDocument(
+                        this.databaseId,
+                        'attendance_records',
+                        lastRecord.$id
+                    );
+
+                    // Reload data
+                    await this.loadData();
+                } catch (error) {
+                    console.error('Error undoing entry:', error);
+                    alert('Failed to undo entry: ' + error.message);
+                }
+            }
+
+            getSubjectAttendance(subjectId) {
+                const records = this.attendanceRecords.filter(record => record.subject_id === subjectId);
+                const presentCount = records.filter(record => record.status === 'present').length;
+                const totalCount = records.length;
+                
+                return {
+                    present: presentCount,
+                    absent: totalCount - presentCount,
+                    total: totalCount,
+                    percentage: totalCount > 0 ? (presentCount / totalCount) * 100 : 0
+                };
+            }
+
+            getOverallStats() {
+                let totalClasses = 0;
+                let totalAttended = 0;
+                let totalConducted = 0;
+
+                this.subjects.forEach(subject => {
+                    const attendance = this.getSubjectAttendance(subject.$id);
+                    totalClasses += subject.total_classes;
+                    totalAttended += attendance.present;
+                    totalConducted += attendance.total;
+                });
+
+                const overallPercentage = totalConducted > 0 ? (totalAttended / totalConducted) * 100 : 0;
+                const classesNeededFor75 = Math.ceil(totalConducted * 0.75);
+                const safeToMiss = Math.max(0, totalAttended - classesNeededFor75);
+                const mustAttend = Math.max(0, classesNeededFor75 - totalAttended);
+
+                return {
+                    totalClasses,
+                    totalAttended,
+                    totalConducted,
+                    overallPercentage,
+                    safeToMiss,
+                    mustAttend
+                };
+            }
+
+            getAttendanceColor(percentage) {
+                if (percentage >= 75) return 'good';
+                if (percentage >= 65) return 'warning';
+                return 'danger';
+            }
+
+            render() {
+                this.renderSubjects();
+                this.renderSummary();
+            }
+
+            renderSubjects() {
+                const grid = document.getElementById('subjectsGrid');
+                grid.innerHTML = '';
+
+                this.subjects.forEach((subject) => {
+                    const attendance = this.getSubjectAttendance(subject.$id);
+                    const remaining = subject.total_classes - attendance.total;
+                    const colorClass = this.getAttendanceColor(attendance.percentage);
+
+                    const card = document.createElement('div');
+                    card.className = 'subject-card';
+                    card.innerHTML = `
+                        <div class="subject-header">
+                            <div class="subject-name">${subject.name}</div>
+                            <div class="subject-stats">
+                                <span>Total: ${subject.total_classes}</span>
+                                <span>Remaining: ${remaining}</span>
+                            </div>
+                        </div>
+                        <div class="subject-body">
+                            <div class="attendance-bar">
+                                <div class="attendance-fill ${colorClass}" style="width: ${attendance.percentage}%"></div>
+                            </div>
+                            <div class="attendance-details">
+                                <div class="detail-item">
+                                    <div class="detail-value">${attendance.present}</div>
+                                    <div class="detail-label">Present</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-value">${attendance.absent}</div>
+                                    <div class="detail-label">Absent</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-value">${attendance.percentage.toFixed(1)}%</div>
+                                    <div class="detail-label">Attendance</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-value">${attendance.total}</div>
+                                    <div class="detail-label">Conducted</div>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-present" onclick="tracker.markAttendance('${subject.$id}', true)">
+                                    ✓ Present
+                                </button>
+                                <button class="btn btn-absent" onclick="tracker.markAttendance('${subject.$id}', false)">
+                                    ✗ Absent
+                                </button>
+                                <button class="btn btn-undo" onclick="tracker.undoLastEntry('${subject.$id}')">
+                                    ↶ Undo
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            renderSummary() {
+                const stats = this.getOverallStats();
+                
+                document.getElementById('totalClasses').textContent = stats.totalClasses;
+                document.getElementById('totalAttended').textContent = stats.totalAttended;
+                document.getElementById('overallPercentage').textContent = stats.overallPercentage.toFixed(1) + '%';
+                document.getElementById('safeToMiss').textContent = stats.safeToMiss;
+                document.getElementById('mustAttend').textContent = stats.mustAttend;
+                
+                const daysToTarget = Math.max(0, Math.ceil(stats.mustAttend / 4));
+                document.getElementById('daysToTarget').textContent = daysToTarget;
+
+                const warningDiv = document.getElementById('warningMessage');
+                warningDiv.innerHTML = '';
+
+                if (stats.overallPercentage < 65) {
+                    warningDiv.innerHTML = `
+                        <div class="danger-message">
+                            🚨 CRITICAL: Your attendance is below 65%! You need to attend ${stats.mustAttend} more classes to reach 75%.
+                        </div>
+                    `;
+                } else if (stats.overallPercentage < 75) {
+                    warningDiv.innerHTML = `
+                        <div class="warning-message">
+                            ⚠️ WARNING: You need to attend ${stats.mustAttend} more classes to reach the 75% requirement.
+                        </div>
+                    `;
+                } else {
+                    warningDiv.innerHTML = `
+                        <div style="background: linear-gradient(135deg, #d4edda, #a3d977); border: 1px solid #28a745; color: #155724; padding: 15px; border-radius: 10px; text-align: center; font-weight: bold;">
+                            ✅ Great job! You're meeting the attendance requirement. You can safely miss ${stats.safeToMiss} more classes.
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Global functions for UI
+        function saveAppwriteConfig() {
+            const projectId = document.getElementById('projectId').value;
+            const databaseId = document.getElementById('databaseId').value;
+            const endpoint = document.getElementById('endpoint').value;
+
+            if (!projectId || !databaseId || !endpoint) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            localStorage.setItem('appwrite_project_id', projectId);
+            localStorage.setItem('appwrite_database_id', databaseId);
+            localStorage.setItem('appwrite_endpoint', endpoint);
+
+            // Restart the app
+            location.reload();
+        }
+
+        async function loginUser() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                await tracker.account.createEmailPasswordSession(email, password);
+                location.reload();
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            }
+        }
+
+        async function signupUser() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                await tracker.account.create(Appwrite.ID.unique(), email, password);
+                await tracker.account.createEmailPasswordSession(email, password);
+                location.reload();
+            } catch (error) {
+                alert('Signup failed: ' + error.message);
+            }
+        }
+
+        async function setupSubjects() {
+            const defaultSubjects = [
+                { name: 'Linear Algebra', total_classes: 30 },
+                { name: 'Statistics', total_classes: 30 },
+                { name: 'Microeconomics', total_classes: 30 },
+                { name: 'International Finance', total_classes: 30 },
+                { name: 'Excel', total_classes: 20 }
+            ];
+
+            try {
+                for (const subject of defaultSubjects) {
+                    await tracker.databases.createDocument(
+                        tracker.databaseId,
+                        'subjects',
+                        Appwrite.ID.unique(),
+                        {
+                            user_id: tracker.user.$id,
+                            name: subject.name,
+                            total_classes: subject.total_classes,
+                            semester: 'Spring 2025'
+                        }
+                    );
+                }
+
+                alert('Subjects created successfully!');
+                await tracker.loadData();
+            } catch (error) {
+                alert('Failed to create subjects: ' + error.message);
+            }
+        }
+
+        // Initialize the tracker
+        const tracker = new AttendanceTracker();
+    </script>
+</body>
+</html>
