@@ -120,6 +120,7 @@ body {
     color: hsl(var(--muted-foreground));
     text-decoration: none;
     font-weight: 500;
+    font-family: 'Space Grotesk', sans-serif;
 }
 
 .contact-info a:hover {
