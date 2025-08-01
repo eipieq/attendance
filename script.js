@@ -46,17 +46,17 @@ class AttendanceTracker {
     }
 
     showLandingPage() {
-        document.getElementById('landingPage').style.display = 'block';
+        document.getElementById('landingPage').style.display = 'flex';
         this.hideOtherSections(['landingPage']);
     }
 
     showSubjectSetupSection() {
-        document.getElementById('subjectSetupSection').style.display = 'block';
+        document.getElementById('subjectSetupSection').style.display = 'flex';
         this.hideOtherSections(['subjectSetupSection']);
     }
 
     showLoadingSection() {
-        document.getElementById('loadingSection').style.display = 'block';
+        document.getElementById('loadingSection').style.display = 'flex';
         this.hideOtherSections(['loadingSection']);
     }
 
@@ -69,7 +69,7 @@ class AttendanceTracker {
 
     showError(message) {
         document.querySelector('#errorSection .error-text').textContent = message;
-        document.getElementById('errorSection').style.display = 'block';
+        document.getElementById('errorSection').style.display = 'flex';
         this.hideOtherSections(['errorSection']);
     }
 
