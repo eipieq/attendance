@@ -3,70 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Tracker</title>
+    <title>CourseFlow</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap');
+    </style>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <!-- Landing Page -->
         <div id="landingPage" class="landing-page">
-            <div class="landing-content">
-                <div class="landing-hero">
-                    <div class="hero-text">
-                        <h1 class="landing-title">Attendance Tracker</h1>
-                        <p class="landing-subtitle">Track your class attendance and stay above the 75% requirement</p>
-                        <div class="landing-features">
-                            <div class="feature-item">
-                                <h3>Real-time Tracking</h3>
-                                <p>Monitor your attendance across all subjects in one dashboard</p>
-                            </div>
-                            <div class="feature-item">
-                                <h3>Smart Alerts</h3>
-                                <p>Get warnings when you're approaching the danger zone</p>
-                            </div>
-                            <div class="feature-item">
-                                <h3>Progress Analytics</h3>
-                                <p>See exactly how many classes you can afford to miss</p>
-                            </div>
+            <div class="landing-container">
+                <div class="landing-left">
+                    <h1 class="landing-title">CourseFlow</h1>
+                    <p class="landing-subtitle">Never miss the 75% attendance requirement again</p>
+                    
+                    <div class="features-list">
+                        <div class="feature">
+                            <span class="feature-icon">📊</span>
+                            <span>Real-time tracking across all subjects</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">⚠️</span>
+                            <span>Smart alerts for attendance thresholds</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📈</span>
+                            <span>Calculate exactly how many classes you can miss</span>
                         </div>
                     </div>
-                    <div class="landing-login">
-                        <div class="login-card">
-                            <h2>Get Started</h2>
-                            <div id="loginForm">
+                </div>
+                
+                <div class="landing-right">
+                    <div class="auth-card">
+                        <div id="loginForm">
+                            <h3>Welcome back</h3>
+                            <div class="form-group">
+                                <input type="email" id="email" placeholder="Email">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" id="password" placeholder="Password">
+                            </div>
+                            <button class="btn btn-primary btn-full" onclick="loginUser()">Sign In</button>
+                            <p class="auth-switch">Don't have an account? <a href="#" onclick="showSignupForm()">Sign up</a></p>
+                        </div>
+                        
+                        <div id="signupForm" style="display: none;">
+                            <h3>Create account</h3>
+                            <div class="form-group">
+                                <input type="email" id="signupEmail" placeholder="Email">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" id="signupPassword" placeholder="Password (min. 8 characters)">
+                            </div>
+                            <div id="nameField" style="display: none;">
                                 <div class="form-group">
-                                    <label for="email">Email</label>
-                                    <input type="email" id="email" placeholder="Enter your email">
-                                </div>
-                                <div class="form-group">
-                                    <label for="password">Password</label>
-                                    <input type="password" id="password" placeholder="Enter your password">
-                                </div>
-                                <div class="button-group">
-                                    <button class="btn btn-primary" onclick="loginUser()">Login</button>
-                                    <button class="btn btn-secondary" onclick="showSignupForm()">Sign Up</button>
+                                    <input type="text" id="signupName" placeholder="Full name">
                                 </div>
                             </div>
-                            <div id="signupForm" style="display: none;">
-                                <div class="form-group">
-                                    <label for="signupEmail">Email</label>
-                                    <input type="email" id="signupEmail" placeholder="Enter your email">
-                                </div>
-                                <div class="form-group">
-                                    <label for="signupPassword">Password</label>
-                                    <input type="password" id="signupPassword" placeholder="Enter your password">
-                                </div>
-                                <div id="nameField" style="display: none;">
-                                    <div class="form-group">
-                                        <label for="signupName">Name</label>
-                                        <input type="text" id="signupName" placeholder="Enter your full name">
-                                    </div>
-                                </div>
-                                <div class="button-group">
-                                    <button class="btn btn-primary" onclick="signupUser()">Sign Up</button>
-                                    <button class="btn btn-ghost" onclick="showLoginForm()">Back to Login</button>
-                                </div>
-                            </div>
+                            <button class="btn btn-primary btn-full" onclick="signupUser()">Continue</button>
+                            <p class="auth-switch">Already have an account? <a href="#" onclick="showLoginForm()">Sign in</a></p>
                         </div>
                     </div>
                 </div>
@@ -78,7 +74,7 @@
             <div class="header-content">
                 <div class="header-main">
                     <div>
-                        <h1 class="header-title">Attendance Dashboard</h1>
+                        <h1 class="header-title">CourseFlow Dashboard</h1>
                         <p class="header-subtitle">Stay on track with your 75% attendance requirement</p>
                     </div>
                     <div class="header-actions">
