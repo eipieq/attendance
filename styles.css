@@ -42,7 +42,85 @@ body {
     padding: 8px;
 }
 
-/* Header styles */
+/* Landing page styles */
+.landing-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, hsl(var(--muted)) 0%, hsl(var(--background)) 100%);
+}
+
+.landing-content {
+    max-width: 800px;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.landing-hero {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 48px 32px;
+}
+
+.landing-title {
+    font-size: 3rem;
+    font-weight: 900;
+    color: hsl(var(--foreground));
+    margin-bottom: 12px;
+    letter-spacing: -0.025em;
+}
+
+.landing-subtitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    margin-bottom: 40px;
+    line-height: 1.4;
+}
+
+.landing-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.feature-item {
+    padding: 20px;
+    background-color: hsl(var(--muted) / 0.5);
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+}
+
+.feature-item h3 {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: hsl(var(--foreground));
+    margin-bottom: 8px;
+}
+
+.feature-item p {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.4;
+}
+
+.btn-large {
+    padding: 12px 32px;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Header updates for logged in state */
 .header {
     background-color: hsl(var(--card));
     border: 1px solid hsl(var(--border));
@@ -53,6 +131,25 @@ body {
 
 .header-content {
     margin-bottom: 16px;
+}
+
+.header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-email {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: hsl(var(--muted-foreground));
 }
 
 .header-title {

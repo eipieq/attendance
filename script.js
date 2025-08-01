@@ -8,6 +8,21 @@ class AttendanceTracker {
         this.attendanceRecords = [];
         this.requiredPercentage = 75;
         
+        // Global functions for UI interactions
+function showLogin() {
+    tracker.showLoginSection();
+}
+
+async function logoutUser() {
+    try {
+        await tracker.account.deleteSession('current');
+        location.reload();
+    } catch (error) {
+        console.error('Logout failed:', error);
+        // Force reload anyway in case of error
+        location.reload();
+    }
+} 
         // Hardcoded Appwrite configuration
         this.config = {
             projectId: 'courseflow',
@@ -26,10 +41,11 @@ class AttendanceTracker {
         try {
             this.user = await this.account.get();
             console.log('User logged in:', this.user.name);
+            document.getElementById('userEmail').textContent = this.user.email;
             await this.loadData();
         } catch (error) {
             console.log('User not logged in');
-            this.showLoginSection();
+            this.showLandingPage();
         }
     }
 
@@ -41,6 +57,11 @@ class AttendanceTracker {
         this.databases = new Appwrite.Databases(this.appwrite);
         this.account = new Appwrite.Account(this.appwrite);
         this.databaseId = config.databaseId;
+    }
+
+    showLandingPage() {
+        document.getElementById('landingPage').style.display = 'block';
+        this.hideOtherSections(['landingPage']);
     }
 
     showLoginSection() {
@@ -59,6 +80,7 @@ class AttendanceTracker {
     }
 
     showMainContent() {
+        document.getElementById('appHeader').style.display = 'block';
         document.getElementById('mainContent').style.display = 'block';
         this.hideOtherSections(['mainContent']);
     }
@@ -70,12 +92,17 @@ class AttendanceTracker {
     }
 
     hideOtherSections(except = []) {
-        const sections = ['loginSection', 'subjectSetupSection', 'loadingSection', 'errorSection', 'mainContent'];
+        const sections = ['landingPage', 'loginSection', 'subjectSetupSection', 'loadingSection', 'errorSection', 'mainContent'];
         sections.forEach(section => {
             if (!except.includes(section)) {
                 document.getElementById(section).style.display = 'none';
             }
         });
+        
+        // Also hide app header unless we're showing main content
+        if (!except.includes('mainContent')) {
+            document.getElementById('appHeader').style.display = 'none';
+        }
     }
 
     async loadData() {
@@ -356,7 +383,7 @@ class AttendanceTracker {
     }
 }
 
-// Global functions for UI interactions
+//
 async function loginUser() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
