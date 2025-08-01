@@ -583,6 +583,7 @@ body {
 /* Action buttons */
 .action-buttons {
     display: flex;
+    flex-direction: row;
     gap: 4px;
 }
 
