@@ -7,22 +7,8 @@ class AttendanceTracker {
         this.subjects = [];
         this.attendanceRecords = [];
         this.requiredPercentage = 75;
+        this.signupStep = 1; // 1 = email/password, 2 = name
         
-        // Global functions for UI interactions
-function showLogin() {
-    tracker.showLoginSection();
-}
-
-async function logoutUser() {
-    try {
-        await tracker.account.deleteSession('current');
-        location.reload();
-    } catch (error) {
-        console.error('Logout failed:', error);
-        // Force reload anyway in case of error
-        location.reload();
-    }
-} 
         // Hardcoded Appwrite configuration
         this.config = {
             projectId: 'courseflow',
@@ -62,11 +48,6 @@ async function logoutUser() {
     showLandingPage() {
         document.getElementById('landingPage').style.display = 'block';
         this.hideOtherSections(['landingPage']);
-    }
-
-    showLoginSection() {
-        document.getElementById('loginSection').style.display = 'block';
-        this.hideOtherSections(['loginSection']);
     }
 
     showSubjectSetupSection() {
@@ -383,7 +364,25 @@ async function logoutUser() {
     }
 }
 
-//
+// Global functions for UI interactions
+function showLoginForm() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+    tracker.signupStep = 1;
+}
+
+function showSignupForm() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'block';
+    document.getElementById('nameField').style.display = 'none';
+    tracker.signupStep = 1;
+    
+    // Clear signup form
+    document.getElementById('signupEmail').value = '';
+    document.getElementById('signupPassword').value = '';
+    document.getElementById('signupName').value = '';
+}
+
 async function loginUser() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
@@ -402,25 +401,69 @@ async function loginUser() {
 }
 
 async function signupUser() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
+    if (tracker.signupStep === 1) {
+        // First step: validate email and password
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
 
-    if (!email || !password) {
-        alert('Please fill in all fields');
+        if (!email || !password) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        if (password.length < 8) {
+            alert('Password must be at least 8 characters long');
+            return;
+        }
+
+        // Show name field and proceed to step 2
+        document.getElementById('nameField').style.display = 'block';
+        tracker.signupStep = 2;
+        document.getElementById('signupName').focus();
         return;
     }
 
-    if (password.length < 8) {
-        alert('Password must be at least 8 characters long');
-        return;
-    }
+    if (tracker.signupStep === 2) {
+        // Second step: validate name and create account
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        const name = document.getElementById('signupName').value.trim();
 
+        if (!name) {
+            alert('Please enter your name');
+            return;
+        }
+
+        try {
+            await tracker.account.create(Appwrite.ID.unique(), email, password, name);
+            await tracker.account.createEmailPasswordSession(email, password);
+            location.reload();
+        } catch (error) {
+            alert('Signup failed: ' + error.message);
+            // Reset to step 1 on error
+            tracker.signupStep = 1;
+            document.getElementById('nameField').style.display = 'none';
+        }
+    }
+}
+
+async function logoutUser() {
     try {
-        await tracker.account.create(Appwrite.ID.unique(), email, password);
-        await tracker.account.createEmailPasswordSession(email, password);
+        // Delete current session
+        await tracker.account.deleteSession('current');
+        
+        // Clear any stored data
+        tracker.user = null;
+        tracker.subjects = [];
+        tracker.attendanceRecords = [];
+        
+        // Reload the page to show landing page
         location.reload();
     } catch (error) {
-        alert('Signup failed: ' + error.message);
+        console.error('Logout error:', error);
+        // Force reload anyway in case of error
+        tracker.user = null;
+        location.reload();
     }
 }
 
@@ -471,5 +514,22 @@ document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key === 'r') {
         e.preventDefault();
         location.reload();
+    }
+    
+    // Enter key support for forms
+    if (e.key === 'Enter') {
+        const activeElement = document.activeElement;
+        
+        // Login form
+        if (activeElement.closest('#loginForm')) {
+            e.preventDefault();
+            loginUser();
+        }
+        
+        // Signup form
+        if (activeElement.closest('#signupForm')) {
+            e.preventDefault();
+            signupUser();
+        }
     }
 });

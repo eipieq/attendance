@@ -12,23 +12,63 @@
         <div id="landingPage" class="landing-page">
             <div class="landing-content">
                 <div class="landing-hero">
-                    <h1 class="landing-title">Attendance Tracker</h1>
-                    <p class="landing-subtitle">Track your class attendance and stay above the 75% requirement</p>
-                    <div class="landing-features">
-                        <div class="feature-item">
-                            <h3>Real-time Tracking</h3>
-                            <p>Monitor your attendance across all subjects in one dashboard</p>
-                        </div>
-                        <div class="feature-item">
-                            <h3>Smart Alerts</h3>
-                            <p>Get warnings when you're approaching the danger zone</p>
-                        </div>
-                        <div class="feature-item">
-                            <h3>Progress Analytics</h3>
-                            <p>See exactly how many classes you can afford to miss</p>
+                    <div class="hero-text">
+                        <h1 class="landing-title">Attendance Tracker</h1>
+                        <p class="landing-subtitle">Track your class attendance and stay above the 75% requirement</p>
+                        <div class="landing-features">
+                            <div class="feature-item">
+                                <h3>Real-time Tracking</h3>
+                                <p>Monitor your attendance across all subjects in one dashboard</p>
+                            </div>
+                            <div class="feature-item">
+                                <h3>Smart Alerts</h3>
+                                <p>Get warnings when you're approaching the danger zone</p>
+                            </div>
+                            <div class="feature-item">
+                                <h3>Progress Analytics</h3>
+                                <p>See exactly how many classes you can afford to miss</p>
+                            </div>
                         </div>
                     </div>
-                    <button class="btn btn-primary btn-large" onclick="showLogin()">Get Started</button>
+                    <div class="landing-login">
+                        <div class="login-card">
+                            <h2>Get Started</h2>
+                            <div id="loginForm">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" placeholder="Enter your email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" id="password" placeholder="Enter your password">
+                                </div>
+                                <div class="button-group">
+                                    <button class="btn btn-primary" onclick="loginUser()">Login</button>
+                                    <button class="btn btn-secondary" onclick="showSignupForm()">Sign Up</button>
+                                </div>
+                            </div>
+                            <div id="signupForm" style="display: none;">
+                                <div class="form-group">
+                                    <label for="signupEmail">Email</label>
+                                    <input type="email" id="signupEmail" placeholder="Enter your email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="signupPassword">Password</label>
+                                    <input type="password" id="signupPassword" placeholder="Enter your password">
+                                </div>
+                                <div id="nameField" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="signupName">Name</label>
+                                        <input type="text" id="signupName" placeholder="Enter your full name">
+                                    </div>
+                                </div>
+                                <div class="button-group">
+                                    <button class="btn btn-primary" onclick="signupUser()">Sign Up</button>
+                                    <button class="btn btn-ghost" onclick="showLoginForm()">Back to Login</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -75,27 +115,6 @@
                 </div>
             </div>
         </header>
-
-        <!-- Login Section -->
-        <div id="loginSection" class="setup-section" style="display: none;">
-            <div class="setup-card">
-                <div class="setup-header">
-                    <h2>Login or Sign Up</h2>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password">
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="loginUser()">Login</button>
-                    <button class="btn btn-secondary" onclick="signupUser()">Sign Up</button>
-                </div>
-            </div>
-        </div>
 
         <!-- Subject Setup Section -->
         <div id="subjectSetupSection" class="setup-section" style="display: none;">
