@@ -92,7 +92,7 @@ async function logoutUser() {
     }
 
     hideOtherSections(except = []) {
-        const sections = ['landingPage', 'loginSection', 'subjectSetupSection', 'loadingSection', 'errorSection', 'mainContent'];
+        const sections = ['landingPage', 'subjectSetupSection', 'loadingSection', 'errorSection', 'mainContent'];
         sections.forEach(section => {
             if (!except.includes(section)) {
                 document.getElementById(section).style.display = 'none';
