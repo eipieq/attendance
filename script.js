@@ -10,7 +10,7 @@ class AttendanceTracker {
         
         // Hardcoded Appwrite configuration
         this.config = {
-            projectId: 'sqre',
+            projectId: 'courseflow',
             databaseId: 'attendance-db',
             endpoint: 'https://fra.cloud.appwrite.io/v1'
         };
