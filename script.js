@@ -10,26 +10,69 @@ class AttendanceTracker {
         this.signupStep = 1; // 1 = email/password, 2 = name
         this.selectedSubjects = []; // Store selected subjects during setup
         
-        // Default subjects available for selection
+        // Default subjects available for selection (based on MSE B.A. Economics curriculum)
         this.defaultSubjects = [
+            // Core Economics Courses
+            { name: 'Principles of Microeconomics', classes: 30, category: 'Core Economics' },
+            { name: 'Principles of Macroeconomics', classes: 30, category: 'Core Economics' },
+            { name: 'Intermediate Microeconomics', classes: 30, category: 'Core Economics' },
+            { name: 'Intermediate Macroeconomics', classes: 30, category: 'Core Economics' },
+            { name: 'Public Economics', classes: 30, category: 'Core Economics' },
+            { name: 'Development Economics', classes: 30, category: 'Core Economics' },
+            { name: 'International Trade', classes: 30, category: 'Core Economics' },
+            { name: 'Indian Economy', classes: 30, category: 'Core Economics' },
+            
+            // Mathematics & Statistics
+            { name: 'Mathematical Methods for Economics I', classes: 30, category: 'Mathematics' },
+            { name: 'Mathematical Methods for Economics II', classes: 30, category: 'Mathematics' },
+            { name: 'Statistics for Economics', classes: 30, category: 'Mathematics' },
+            { name: 'Introductory Econometrics', classes: 30, category: 'Mathematics' },
+            { name: 'Applied Econometrics', classes: 30, category: 'Mathematics' },
             { name: 'Linear Algebra', classes: 30, category: 'Mathematics' },
-            { name: 'Calculus', classes: 30, category: 'Mathematics' },
-            { name: 'Statistics', classes: 30, category: 'Mathematics' },
-            { name: 'Probability', classes: 25, category: 'Mathematics' },
-            { name: 'Microeconomics', classes: 30, category: 'Economics' },
-            { name: 'Macroeconomics', classes: 30, category: 'Economics' },
+            { name: 'Real Analysis', classes: 30, category: 'Mathematics' },
+            { name: 'Abstract Algebra', classes: 30, category: 'Mathematics' },
+            { name: 'Differential Equations', classes: 30, category: 'Mathematics' },
+            { name: 'Operations Research', classes: 30, category: 'Mathematics' },
+            { name: 'Probability Theory', classes: 30, category: 'Mathematics' },
+            { name: 'Stochastic Calculus', classes: 30, category: 'Mathematics' },
+            
+            // Finance & Banking
+            { name: 'Money and Banking', classes: 30, category: 'Finance' },
+            { name: 'Financial Economics', classes: 30, category: 'Finance' },
             { name: 'International Finance', classes: 30, category: 'Finance' },
-            { name: 'Corporate Finance', classes: 30, category: 'Finance' },
-            { name: 'Financial Markets', classes: 25, category: 'Finance' },
-            { name: 'Excel', classes: 20, category: 'Technology' },
-            { name: 'Python Programming', classes: 30, category: 'Technology' },
-            { name: 'Data Analysis', classes: 25, category: 'Technology' },
-            { name: 'Business Communication', classes: 20, category: 'Business' },
-            { name: 'Marketing', classes: 25, category: 'Business' },
-            { name: 'Operations Management', classes: 30, category: 'Business' },
-            { name: 'Research Methods', classes: 25, category: 'Research' },
-            { name: 'Academic Writing', classes: 20, category: 'Language' },
-            { name: 'English Literature', classes: 25, category: 'Language' }
+            { name: 'Risk Management', classes: 30, category: 'Finance' },
+            
+            // Technology & Programming
+            { name: 'Decision Support System', classes: 25, category: 'Technology' },
+            { name: 'Introduction to R/Matlab/Python', classes: 25, category: 'Technology' },
+            { name: 'Introduction to Computer Programming', classes: 30, category: 'Technology' },
+            { name: 'Introduction to Machine Learning', classes: 30, category: 'Technology' },
+            { name: 'Introduction to Data Science', classes: 30, category: 'Technology' },
+            { name: 'Introduction to Business Analytics', classes: 30, category: 'Technology' },
+            
+            // Advanced Economics Electives
+            { name: 'Advanced Macroeconomics', classes: 30, category: 'Advanced Economics' },
+            { name: 'Introduction to Game Theory', classes: 30, category: 'Advanced Economics' },
+            { name: 'Issues in Development Economics', classes: 30, category: 'Advanced Economics' },
+            { name: 'Energy Economics', classes: 30, category: 'Advanced Economics' },
+            { name: 'Environmental Economics', classes: 30, category: 'Advanced Economics' },
+            { name: 'Introduction to Behavioural Economics', classes: 30, category: 'Advanced Economics' },
+            { name: 'History of Economic Thought', classes: 30, category: 'Advanced Economics' },
+            { name: 'Economics of Climate Change and Development', classes: 30, category: 'Advanced Economics' },
+            { name: 'Optimization in Economic Theory', classes: 30, category: 'Advanced Economics' },
+            
+            // Time Series & Econometrics
+            { name: 'Introduction to Time Series Analysis', classes: 30, category: 'Econometrics' },
+            { name: 'Stochastic Process', classes: 30, category: 'Econometrics' },
+            { name: 'Introduction to Non-Linear Time Series Econometrics', classes: 30, category: 'Econometrics' },
+            
+            // Language & Communication
+            { name: 'English (Communication)', classes: 25, category: 'Language' },
+            { name: 'Environmental Studies/Science', classes: 25, category: 'Language' },
+            
+            // Philosophy & General Studies
+            { name: 'History of Western Philosophy', classes: 30, category: 'Philosophy' },
+            { name: 'Logic and Philosophical Inquiry', classes: 30, category: 'Philosophy' }
         ];
         
         // Hardcoded Appwrite configuration
