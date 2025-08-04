@@ -8,7 +8,29 @@ class AttendanceTracker {
         this.attendanceRecords = [];
         this.requiredPercentage = 75;
         this.signupStep = 1; // 1 = email/password, 2 = name
-        this.manualSubjects = []; // Store manually added subjects during setup
+        this.selectedSubjects = []; // Store selected subjects during setup
+        
+        // Default subjects available for selection
+        this.defaultSubjects = [
+            { name: 'Linear Algebra', classes: 30, category: 'Mathematics' },
+            { name: 'Calculus', classes: 30, category: 'Mathematics' },
+            { name: 'Statistics', classes: 30, category: 'Mathematics' },
+            { name: 'Probability', classes: 25, category: 'Mathematics' },
+            { name: 'Microeconomics', classes: 30, category: 'Economics' },
+            { name: 'Macroeconomics', classes: 30, category: 'Economics' },
+            { name: 'International Finance', classes: 30, category: 'Finance' },
+            { name: 'Corporate Finance', classes: 30, category: 'Finance' },
+            { name: 'Financial Markets', classes: 25, category: 'Finance' },
+            { name: 'Excel', classes: 20, category: 'Technology' },
+            { name: 'Python Programming', classes: 30, category: 'Technology' },
+            { name: 'Data Analysis', classes: 25, category: 'Technology' },
+            { name: 'Business Communication', classes: 20, category: 'Business' },
+            { name: 'Marketing', classes: 25, category: 'Business' },
+            { name: 'Operations Management', classes: 30, category: 'Business' },
+            { name: 'Research Methods', classes: 25, category: 'Research' },
+            { name: 'Academic Writing', classes: 20, category: 'Language' },
+            { name: 'English Literature', classes: 25, category: 'Language' }
+        ];
         
         // Hardcoded Appwrite configuration
         this.config = {
@@ -54,15 +76,141 @@ class AttendanceTracker {
     showSubjectSetupSection() {
         document.getElementById('subjectSetupSection').style.display = 'flex';
         this.hideOtherSections(['subjectSetupSection']);
+        // Reset selected subjects and render the interface
+        this.selectedSubjects = [];
+        this.renderDefaultSubjects();
+        this.updateSelectedSubjects();
     }
 
-    showManualSubjectSection() {
-        document.getElementById('manualSubjectSection').style.display = 'flex';
-        this.hideOtherSections(['manualSubjectSection']);
-        // Clear the form
-        document.getElementById('subjectName').value = '';
-        document.getElementById('totalClasses').value = '';
-        this.renderAddedSubjects();
+    renderDefaultSubjects() {
+        const grid = document.getElementById('defaultSubjectsGrid');
+        
+        // Group subjects by category
+        const categories = {};
+        this.defaultSubjects.forEach(subject => {
+            if (!categories[subject.category]) {
+                categories[subject.category] = [];
+            }
+            categories[subject.category].push(subject);
+        });
+
+        let html = '';
+        Object.keys(categories).sort().forEach(category => {
+            html += `
+                <div class="subject-category">
+                    <h4 class="category-title">${category}</h4>
+                    <div class="category-subjects">
+                        ${categories[category].map(subject => `
+                            <div class="default-subject-item" id="default-${subject.name.replace(/\s+/g, '-').toLowerCase()}">
+                                <div class="subject-info">
+                                    <span class="subject-name">${subject.name}</span>
+                                    <span class="subject-classes">${subject.classes} classes</span>
+                                </div>
+                                <button class="btn btn-ghost btn-small add-subject-btn" onclick="tracker.selectDefaultSubject('${subject.name}', ${subject.classes})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        });
+
+        grid.innerHTML = html;
+    }
+
+    selectDefaultSubject(name, classes) {
+        // Check if already selected
+        const exists = this.selectedSubjects.find(s => s.name === name);
+        if (exists) {
+            this.showAlert(`"${name}" is already selected`, 'warning');
+            return;
+        }
+
+        // Add to selected subjects
+        this.selectedSubjects.push({ name, classes, isCustom: false });
+        
+        // Update UI
+        this.updateSubjectButton(name, true);
+        this.updateSelectedSubjects();
+        this.showAlert(`Added "${name}" to your subjects`, 'success');
+    }
+
+    updateSubjectButton(name, isSelected) {
+        const elementId = `default-${name.replace(/\s+/g, '-').toLowerCase()}`;
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        const button = element.querySelector('.add-subject-btn');
+        if (isSelected) {
+            button.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            `;
+            button.className = 'btn btn-success btn-small add-subject-btn';
+            button.onclick = () => this.unselectDefaultSubject(name);
+            element.classList.add('selected');
+        } else {
+            button.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            `;
+            button.className = 'btn btn-ghost btn-small add-subject-btn';
+            button.onclick = () => this.selectDefaultSubject(name, this.defaultSubjects.find(s => s.name === name).classes);
+            element.classList.remove('selected');
+        }
+    }
+
+    unselectDefaultSubject(name) {
+        // Remove from selected subjects
+        this.selectedSubjects = this.selectedSubjects.filter(s => s.name !== name);
+        
+        // Update UI
+        this.updateSubjectButton(name, false);
+        this.updateSelectedSubjects();
+        this.showAlert(`Removed "${name}" from your subjects`, 'warning');
+    }
+
+    updateSelectedSubjects() {
+        const section = document.getElementById('selectedSubjectsSection');
+        const list = document.getElementById('selectedSubjectsList');
+        const count = document.getElementById('selectedCount');
+        const finishBtn = document.getElementById('finishSetupBtn');
+
+        count.textContent = this.selectedSubjects.length;
+
+        if (this.selectedSubjects.length === 0) {
+            section.style.display = 'none';
+            finishBtn.disabled = true;
+            return;
+        }
+
+        section.style.display = 'block';
+        finishBtn.disabled = false;
+
+        list.innerHTML = this.selectedSubjects.map((subject, index) => `
+            <div class="selected-subject-item">
+                <div class="subject-info">
+                    <span class="subject-name">${subject.name}</span>
+                    <span class="subject-classes">${subject.classes} classes</span>
+                    ${subject.isCustom ? '<span class="custom-badge">Custom</span>' : ''}
+                </div>
+                <button class="btn btn-ghost btn-small" onclick="tracker.removeSelectedSubject(${index})">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    removeSelectedSubject(index) {
+        const subject = this.selectedSubjects[index];
+        this.selectedSubjects.splice(index, 1);
+
+        // If it's a default subject, update its button
+        if (!subject.isCustom) {
+            this.updateSubjectButton(subject.name, false);
+        }
+
+        this.updateSelectedSubjects();
+        this.showAlert(`Removed "${subject.name}" from your subjects`, 'warning');
     }
 
     showLoadingSection() {
@@ -84,7 +232,7 @@ class AttendanceTracker {
     }
 
     hideOtherSections(except = []) {
-        const sections = ['landingPage', 'subjectSetupSection', 'manualSubjectSection', 'loadingSection', 'errorSection', 'mainContent'];
+        const sections = ['landingPage', 'subjectSetupSection', 'loadingSection', 'errorSection', 'mainContent'];
         sections.forEach(section => {
             if (!except.includes(section)) {
                 document.getElementById(section).style.display = 'none';
@@ -113,8 +261,8 @@ class AttendanceTracker {
             );
 
             if (subjectsResponse.documents.length === 0) {
-                // Reset manual subjects array for new setup
-                this.manualSubjects = [];
+                // Reset selected subjects array for new setup
+                this.selectedSubjects = [];
                 this.showSubjectSetupSection();
                 return;
             }
@@ -308,31 +456,11 @@ class AttendanceTracker {
     }
 
     renderAddedSubjects() {
-        const list = document.getElementById('addedSubjectsList');
-        if (this.manualSubjects.length === 0) {
-            list.innerHTML = '';
-            return;
-        }
-
-        list.innerHTML = `
-            <div class="added-subjects-header">
-                <h4>Added Subjects (${this.manualSubjects.length})</h4>
-            </div>
-            ${this.manualSubjects.map((subject, index) => `
-                <div class="added-subject-item">
-                    <div class="subject-info">
-                        <span class="subject-name">${subject.name}</span>
-                        <span class="subject-classes">${subject.totalClasses} classes</span>
-                    </div>
-                    <button class="btn btn-ghost btn-small" onclick="tracker.removeManualSubject(${index})">Remove</button>
-                </div>
-            `).join('')}
-        `;
+        // This method is no longer needed - remove it
     }
 
     removeManualSubject(index) {
-        this.manualSubjects.splice(index, 1);
-        this.renderAddedSubjects();
+        // This method is no longer needed - remove it
     }
 
     render() {
@@ -552,30 +680,79 @@ async function logoutUser() {
 }
 
 async function setupSubjects() {
-    // Check if subjects already exist to prevent duplicates
-    const subjectsExist = await tracker.checkIfSubjectsExist();
-    if (subjectsExist) {
-        tracker.showAlert('Subjects already exist for your account', 'warning');
-        tracker.loadData();
+    // This function is no longer needed - remove it
+}
+
+function showSubjectSetupSection() {
+    tracker.showSubjectSetupSection();
+}
+
+function showManualSubjectForm() {
+    // This function is no longer needed - remove it
+}
+
+function addManualSubject() {
+    // This function is no longer needed - remove it
+}
+
+function addCustomSubject() {
+    const name = document.getElementById('customSubjectName').value.trim();
+    const classes = document.getElementById('customSubjectClasses').value.trim();
+
+    if (!name || !classes) {
+        alert('Please fill in all fields');
         return;
     }
 
-    const defaultSubjects = [
-        { name: 'Linear Algebra', total_classes: 30 },
-        { name: 'Statistics', total_classes: 30 },
-        { name: 'Microeconomics', total_classes: 30 },
-        { name: 'International Finance', total_classes: 30 },
-        { name: 'Excel', total_classes: 20 }
-    ];
+    if (parseInt(classes) < 1 || parseInt(classes) > 200) {
+        alert('Total classes must be between 1 and 200');
+        return;
+    }
+
+    // Check for duplicate names
+    const duplicate = tracker.selectedSubjects.find(subject => 
+        subject.name.toLowerCase() === name.toLowerCase()
+    );
+    
+    if (duplicate) {
+        alert('A subject with this name already exists');
+        return;
+    }
+
+    // Add to selected subjects
+    tracker.selectedSubjects.push({
+        name: name,
+        classes: parseInt(classes),
+        isCustom: true
+    });
+
+    // Clear form
+    document.getElementById('customSubjectName').value = '';
+    document.getElementById('customSubjectClasses').value = '';
+
+    // Update UI
+    tracker.updateSelectedSubjects();
+    tracker.showAlert(`Added custom subject "${name}" successfully!`, 'success');
+}
+
+async function finishSubjectSetup() {
+    if (tracker.selectedSubjects.length === 0) {
+        alert('Please select at least one subject before finishing setup');
+        return;
+    }
 
     try {
         tracker.showLoadingSection();
         
-        for (const subject of defaultSubjects) {
-            await tracker.addSubject(subject.name, subject.total_classes);
+        // Create all selected subjects
+        for (const subject of tracker.selectedSubjects) {
+            await tracker.addSubject(subject.name, subject.classes);
         }
 
-        tracker.showAlert('Default subjects created successfully!', 'success');
+        // Clear the selected subjects array
+        tracker.selectedSubjects = [];
+
+        tracker.showAlert('Subjects created successfully!', 'success');
         setTimeout(() => {
             tracker.loadData();
         }, 1500);
@@ -585,79 +762,8 @@ async function setupSubjects() {
     }
 }
 
-function showSubjectSetupSection() {
-    tracker.showSubjectSetupSection();
-}
-
-function showManualSubjectForm() {
-    tracker.showManualSubjectSection();
-}
-
-function addManualSubject() {
-    const name = document.getElementById('subjectName').value.trim();
-    const totalClasses = document.getElementById('totalClasses').value.trim();
-
-    if (!name || !totalClasses) {
-        alert('Please fill in all fields');
-        return;
-    }
-
-    if (parseInt(totalClasses) < 1 || parseInt(totalClasses) > 200) {
-        alert('Total classes must be between 1 and 200');
-        return;
-    }
-
-    // Check for duplicate names
-    const duplicate = tracker.manualSubjects.find(subject => 
-        subject.name.toLowerCase() === name.toLowerCase()
-    );
-    
-    if (duplicate) {
-        alert('A subject with this name already exists');
-        return;
-    }
-
-    // Add to manual subjects array
-    tracker.manualSubjects.push({
-        name: name,
-        totalClasses: parseInt(totalClasses)
-    });
-
-    // Clear form
-    document.getElementById('subjectName').value = '';
-    document.getElementById('totalClasses').value = '';
-
-    // Re-render the list
-    tracker.renderAddedSubjects();
-
-    tracker.showAlert(`Added "${name}" successfully!`, 'success');
-}
-
 async function finishManualSetup() {
-    if (tracker.manualSubjects.length === 0) {
-        alert('Please add at least one subject before finishing setup');
-        return;
-    }
-
-    try {
-        tracker.showLoadingSection();
-        
-        // Create all manually added subjects
-        for (const subject of tracker.manualSubjects) {
-            await tracker.addSubject(subject.name, subject.totalClasses);
-        }
-
-        // Clear the manual subjects array
-        tracker.manualSubjects = [];
-
-        tracker.showAlert('Subjects created successfully!', 'success');
-        setTimeout(() => {
-            tracker.loadData();
-        }, 1500);
-    } catch (error) {
-        tracker.showAlert('Failed to create subjects: ' + error.message, 'destructive');
-        tracker.showManualSubjectSection();
-    }
+    // This function is no longer needed - remove it
 }
 
 function showAddSubjectModal() {
@@ -734,9 +840,9 @@ document.addEventListener('keydown', (e) => {
         }
 
         // Manual subject form
-        if (activeElement.closest('#manualSubjectSection')) {
+        if (activeElement.closest('#customSubjectName') || activeElement.closest('#customSubjectClasses')) {
             e.preventDefault();
-            addManualSubject();
+            addCustomSubject();
         }
 
         // Modal form

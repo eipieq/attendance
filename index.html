@@ -100,41 +100,54 @@
         </div>
 
         <div id="subjectSetupSection" class="setup-section" style="display: none;">
-            <div class="setup-card">
+            <div class="setup-card setup-card-wide">
                 <div class="setup-header">
                     <h2>Setup Your Subjects</h2>
                 </div>
-                <p class="setup-description">Choose how you'd like to add your subjects:</p>
-                <div class="setup-options">
-                    <button class="btn btn-primary btn-full" onclick="setupSubjects()">Create Default Subjects</button>
-                    <div class="setup-divider">
-                        <span>or</span>
+                <p class="setup-description">Select from common subjects below, or add your own custom subjects:</p>
+                
+                <!-- Default Subjects List -->
+                <div class="default-subjects-section">
+                    <h3 class="section-title">Common Subjects</h3>
+                    <div class="default-subjects-grid" id="defaultSubjectsGrid">
+                        <!-- Will be populated by JavaScript -->
                     </div>
-                    <button class="btn btn-secondary btn-full" onclick="showManualSubjectForm()">Add Subjects Manually</button>
+                </div>
+
+                <!-- Custom Subject Addition -->
+                <div class="custom-subject-section">
+                    <h3 class="section-title">Add Custom Subject</h3>
+                    <div class="custom-subject-form">
+                        <div class="form-row">
+                            <input type="text" id="customSubjectName" placeholder="Subject Name">
+                            <input type="number" id="customSubjectClasses" placeholder="Total Classes" min="1" max="200">
+                            <button class="btn btn-secondary" onclick="addCustomSubject()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected Subjects -->
+                <div class="selected-subjects-section" id="selectedSubjectsSection" style="display: none;">
+                    <h3 class="section-title">Selected Subjects (<span id="selectedCount">0</span>)</h3>
+                    <div class="selected-subjects-list" id="selectedSubjectsList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="setup-actions">
+                    <button class="btn btn-primary btn-full" id="finishSetupBtn" onclick="finishSubjectSetup()" disabled>
+                        Complete Setup
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Manual Subject Addition Form -->
-        <div id="manualSubjectSection" class="setup-section" style="display: none;">
-            <div class="setup-card">
-                <div class="setup-header">
-                    <h2>Add Subject Manually</h2>
-                    <button class="btn btn-ghost btn-small back-btn" onclick="showSubjectSetupSection()">← Back</button>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="subjectName" placeholder="Subject Name (e.g., Linear Algebra)">
-                </div>
-                <div class="form-group">
-                    <input type="number" id="totalClasses" placeholder="Total Classes (e.g., 30)" min="1" max="200">
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="addManualSubject()">Add Subject</button>
-                    <button class="btn btn-secondary" onclick="finishManualSetup()">Finish Setup</button>
-                </div>
-                <div id="addedSubjectsList" class="added-subjects-list"></div>
-            </div>
-        </div>
+        <!-- Manual Subject Addition Form - Remove this section -->
+        
 
         <div id="loadingSection" class="loading-section" style="display: none;">
             <div class="loading-content">
