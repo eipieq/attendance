@@ -8,6 +8,7 @@ class AttendanceTracker {
         this.attendanceRecords = [];
         this.requiredPercentage = 75;
         this.signupStep = 1; // 1 = email/password, 2 = name
+        this.manualSubjects = []; // Store manually added subjects during setup
         
         // Hardcoded Appwrite configuration
         this.config = {
@@ -55,6 +56,15 @@ class AttendanceTracker {
         this.hideOtherSections(['subjectSetupSection']);
     }
 
+    showManualSubjectSection() {
+        document.getElementById('manualSubjectSection').style.display = 'flex';
+        this.hideOtherSections(['manualSubjectSection']);
+        // Clear the form
+        document.getElementById('subjectName').value = '';
+        document.getElementById('totalClasses').value = '';
+        this.renderAddedSubjects();
+    }
+
     showLoadingSection() {
         document.getElementById('loadingSection').style.display = 'flex';
         this.hideOtherSections(['loadingSection']);
@@ -74,7 +84,7 @@ class AttendanceTracker {
     }
 
     hideOtherSections(except = []) {
-        const sections = ['landingPage', 'subjectSetupSection', 'loadingSection', 'errorSection', 'mainContent'];
+        const sections = ['landingPage', 'subjectSetupSection', 'manualSubjectSection', 'loadingSection', 'errorSection', 'mainContent'];
         sections.forEach(section => {
             if (!except.includes(section)) {
                 document.getElementById(section).style.display = 'none';
@@ -92,7 +102,7 @@ class AttendanceTracker {
         try {
             this.showLoadingSection();
             
-            // Load subjects
+            // Load subjects - check if any exist for this user
             const subjectsResponse = await this.databases.listDocuments(
                 this.databaseId,
                 'subjects',
@@ -103,6 +113,8 @@ class AttendanceTracker {
             );
 
             if (subjectsResponse.documents.length === 0) {
+                // Reset manual subjects array for new setup
+                this.manualSubjects = [];
                 this.showSubjectSetupSection();
                 return;
             }
@@ -123,6 +135,48 @@ class AttendanceTracker {
         } catch (error) {
             console.error('Error loading data:', error);
             this.showError('Failed to load data: ' + error.message);
+        }
+    }
+
+    async checkIfSubjectsExist() {
+        try {
+            const response = await this.databases.listDocuments(
+                this.databaseId,
+                'subjects',
+                [
+                    Appwrite.Query.equal('user_id', this.user.$id),
+                    Appwrite.Query.equal('semester', 'Spring 2025')
+                ]
+            );
+            return response.documents.length > 0;
+        } catch (error) {
+            console.error('Error checking subjects:', error);
+            return false;
+        }
+    }
+
+    async addSubject(name, totalClasses) {
+        try {
+            const now = new Date().toISOString();
+            
+            const subject = await this.databases.createDocument(
+                this.databaseId,
+                'subjects',
+                Appwrite.ID.unique(),
+                {
+                    user_id: this.user.$id,
+                    name: name,
+                    total_classes: parseInt(totalClasses),
+                    semester: 'Spring 2025',
+                    created_at: now,
+                    updated_at: now
+                }
+            );
+
+            return subject;
+        } catch (error) {
+            console.error('Error adding subject:', error);
+            throw error;
         }
     }
 
@@ -251,6 +305,34 @@ class AttendanceTracker {
                 alert.remove();
             }
         }, 5000);
+    }
+
+    renderAddedSubjects() {
+        const list = document.getElementById('addedSubjectsList');
+        if (this.manualSubjects.length === 0) {
+            list.innerHTML = '';
+            return;
+        }
+
+        list.innerHTML = `
+            <div class="added-subjects-header">
+                <h4>Added Subjects (${this.manualSubjects.length})</h4>
+            </div>
+            ${this.manualSubjects.map((subject, index) => `
+                <div class="added-subject-item">
+                    <div class="subject-info">
+                        <span class="subject-name">${subject.name}</span>
+                        <span class="subject-classes">${subject.totalClasses} classes</span>
+                    </div>
+                    <button class="btn btn-ghost btn-small" onclick="tracker.removeManualSubject(${index})">Remove</button>
+                </div>
+            `).join('')}
+        `;
+    }
+
+    removeManualSubject(index) {
+        this.manualSubjects.splice(index, 1);
+        this.renderAddedSubjects();
     }
 
     render() {
@@ -470,6 +552,14 @@ async function logoutUser() {
 }
 
 async function setupSubjects() {
+    // Check if subjects already exist to prevent duplicates
+    const subjectsExist = await tracker.checkIfSubjectsExist();
+    if (subjectsExist) {
+        tracker.showAlert('Subjects already exist for your account', 'warning');
+        tracker.loadData();
+        return;
+    }
+
     const defaultSubjects = [
         { name: 'Linear Algebra', total_classes: 30 },
         { name: 'Statistics', total_classes: 30 },
@@ -479,23 +569,86 @@ async function setupSubjects() {
     ];
 
     try {
-        const now = new Date().toISOString();
+        tracker.showLoadingSection();
         
         for (const subject of defaultSubjects) {
-            await tracker.databases.createDocument(
-                tracker.databaseId,
-                'subjects',
-                Appwrite.ID.unique(),
-                {
-                    user_id: tracker.user.$id,
-                    name: subject.name,
-                    total_classes: subject.total_classes,
-                    semester: 'Spring 2025',
-                    created_at: now,
-                    updated_at: now
-                }
-            );
+            await tracker.addSubject(subject.name, subject.total_classes);
         }
+
+        tracker.showAlert('Default subjects created successfully!', 'success');
+        setTimeout(() => {
+            tracker.loadData();
+        }, 1500);
+    } catch (error) {
+        tracker.showAlert('Failed to create subjects: ' + error.message, 'destructive');
+        tracker.showSubjectSetupSection();
+    }
+}
+
+function showSubjectSetupSection() {
+    tracker.showSubjectSetupSection();
+}
+
+function showManualSubjectForm() {
+    tracker.showManualSubjectSection();
+}
+
+function addManualSubject() {
+    const name = document.getElementById('subjectName').value.trim();
+    const totalClasses = document.getElementById('totalClasses').value.trim();
+
+    if (!name || !totalClasses) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    if (parseInt(totalClasses) < 1 || parseInt(totalClasses) > 200) {
+        alert('Total classes must be between 1 and 200');
+        return;
+    }
+
+    // Check for duplicate names
+    const duplicate = tracker.manualSubjects.find(subject => 
+        subject.name.toLowerCase() === name.toLowerCase()
+    );
+    
+    if (duplicate) {
+        alert('A subject with this name already exists');
+        return;
+    }
+
+    // Add to manual subjects array
+    tracker.manualSubjects.push({
+        name: name,
+        totalClasses: parseInt(totalClasses)
+    });
+
+    // Clear form
+    document.getElementById('subjectName').value = '';
+    document.getElementById('totalClasses').value = '';
+
+    // Re-render the list
+    tracker.renderAddedSubjects();
+
+    tracker.showAlert(`Added "${name}" successfully!`, 'success');
+}
+
+async function finishManualSetup() {
+    if (tracker.manualSubjects.length === 0) {
+        alert('Please add at least one subject before finishing setup');
+        return;
+    }
+
+    try {
+        tracker.showLoadingSection();
+        
+        // Create all manually added subjects
+        for (const subject of tracker.manualSubjects) {
+            await tracker.addSubject(subject.name, subject.totalClasses);
+        }
+
+        // Clear the manual subjects array
+        tracker.manualSubjects = [];
 
         tracker.showAlert('Subjects created successfully!', 'success');
         setTimeout(() => {
@@ -503,6 +656,52 @@ async function setupSubjects() {
         }, 1500);
     } catch (error) {
         tracker.showAlert('Failed to create subjects: ' + error.message, 'destructive');
+        tracker.showManualSubjectSection();
+    }
+}
+
+function showAddSubjectModal() {
+    document.getElementById('addSubjectModal').style.display = 'flex';
+    document.getElementById('modalSubjectName').value = '';
+    document.getElementById('modalTotalClasses').value = '';
+    document.getElementById('modalSubjectName').focus();
+}
+
+function hideAddSubjectModal() {
+    document.getElementById('addSubjectModal').style.display = 'none';
+}
+
+async function addSubjectFromModal() {
+    const name = document.getElementById('modalSubjectName').value.trim();
+    const totalClasses = document.getElementById('modalTotalClasses').value.trim();
+
+    if (!name || !totalClasses) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    if (parseInt(totalClasses) < 1 || parseInt(totalClasses) > 200) {
+        alert('Total classes must be between 1 and 200');
+        return;
+    }
+
+    // Check for duplicate names
+    const duplicate = tracker.subjects.find(subject => 
+        subject.name.toLowerCase() === name.toLowerCase()
+    );
+    
+    if (duplicate) {
+        alert('A subject with this name already exists');
+        return;
+    }
+
+    try {
+        await tracker.addSubject(name, parseInt(totalClasses));
+        hideAddSubjectModal();
+        tracker.showAlert(`Added "${name}" successfully!`, 'success');
+        tracker.loadData();
+    } catch (error) {
+        tracker.showAlert('Failed to add subject: ' + error.message, 'destructive');
     }
 }
 
@@ -532,6 +731,26 @@ document.addEventListener('keydown', (e) => {
         if (activeElement.closest('#signupForm')) {
             e.preventDefault();
             signupUser();
+        }
+
+        // Manual subject form
+        if (activeElement.closest('#manualSubjectSection')) {
+            e.preventDefault();
+            addManualSubject();
+        }
+
+        // Modal form
+        if (activeElement.closest('#addSubjectModal')) {
+            e.preventDefault();
+            addSubjectFromModal();
+        }
+    }
+
+    // Escape key to close modal
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('addSubjectModal');
+        if (modal.style.display === 'flex') {
+            hideAddSubjectModal();
         }
     }
 });

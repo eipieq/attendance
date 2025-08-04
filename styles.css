@@ -279,10 +279,14 @@ body {
     padding: 24px;
     width: 100%;
     max-width: 400px;
+    position: relative;
 }
 
 .setup-header {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .setup-header h2 {
@@ -292,12 +296,191 @@ body {
     color: hsl(var(--foreground));
 }
 
+.back-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
 .setup-description {
     color: hsl(var(--muted-foreground));
     margin-bottom: 20px;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.4;
+}
+
+.setup-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.setup-divider {
+    text-align: center;
+    position: relative;
+    margin: 8px 0;
+}
+
+.setup-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: hsl(var(--border));
+}
+
+.setup-divider span {
+    background-color: hsl(var(--card));
+    padding: 0 12px;
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+/* Added subjects list styles */
+.added-subjects-list {
+    margin-top: 20px;
+}
+
+.added-subjects-header {
+    margin-bottom: 12px;
+}
+
+.added-subjects-header h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.added-subject-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: hsl(var(--muted) / 0.4);
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+    margin-bottom: 6px;
+}
+
+.subject-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.subject-info .subject-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+}
+
+.subject-info .subject-classes {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+}
+
+/* Content header styles */
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 0 4px;
+}
+
+.content-title h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+}
+
+.content-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Modal styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 400px;
+    margin: 20px;
+    position: relative;
+    z-index: 1001;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.modal-header h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: hsl(var(--foreground));
+}
+
+.modal-body {
+    padding: 20px 24px;
+}
+
+.modal-footer {
+    padding: 16px 24px 20px;
+    border-top: 1px solid hsl(var(--border));
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
 }
 
 /* Form styles */
@@ -754,5 +937,38 @@ body {
     .action-buttons {
         flex-direction: row;
         gap: 4px;
+    }
+
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .modal-content {
+        margin: 16px;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .setup-card {
+        max-width: 100%;
+        padding: 20px;
+    }
+
+    .back-btn {
+        position: static;
+        margin-top: 8px;
+    }
+
+    .setup-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
     }
 }

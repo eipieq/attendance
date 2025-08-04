@@ -104,8 +104,35 @@
                 <div class="setup-header">
                     <h2>Setup Your Subjects</h2>
                 </div>
-                <p class="setup-description">Click the button below to create your subjects in the database:</p>
-                <button class="btn btn-primary" onclick="setupSubjects()">Create Default Subjects</button>
+                <p class="setup-description">Choose how you'd like to add your subjects:</p>
+                <div class="setup-options">
+                    <button class="btn btn-primary btn-full" onclick="setupSubjects()">Create Default Subjects</button>
+                    <div class="setup-divider">
+                        <span>or</span>
+                    </div>
+                    <button class="btn btn-secondary btn-full" onclick="showManualSubjectForm()">Add Subjects Manually</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manual Subject Addition Form -->
+        <div id="manualSubjectSection" class="setup-section" style="display: none;">
+            <div class="setup-card">
+                <div class="setup-header">
+                    <h2>Add Subject Manually</h2>
+                    <button class="btn btn-ghost btn-small back-btn" onclick="showSubjectSetupSection()">← Back</button>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="subjectName" placeholder="Subject Name (e.g., Linear Algebra)">
+                </div>
+                <div class="form-group">
+                    <input type="number" id="totalClasses" placeholder="Total Classes (e.g., 30)" min="1" max="200">
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="addManualSubject()">Add Subject</button>
+                    <button class="btn btn-secondary" onclick="finishManualSetup()">Finish Setup</button>
+                </div>
+                <div id="addedSubjectsList" class="added-subjects-list"></div>
             </div>
         </div>
 
@@ -122,8 +149,17 @@
         </div>
 
         <div id="mainContent" class="main-content" style="display: none;">
-            <div class="subjects-grid" id="subjectsGrid">
+            <div class="content-header">
+                <div class="content-title">
+                    <h2>Your Subjects</h2>
                 </div>
+                <div class="content-actions">
+                    <button class="btn btn-secondary btn-small" onclick="showAddSubjectModal()">+ Add Subject</button>
+                </div>
+            </div>
+            
+            <div class="subjects-grid" id="subjectsGrid">
+            </div>
 
             <div class="summary-section">
                 <div class="summary-header">
@@ -144,6 +180,29 @@
                     </div>
                 </div>
                 <div id="warningMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Subject Modal -->
+    <div id="addSubjectModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="hideAddSubjectModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Subject</h3>
+                <button class="modal-close" onclick="hideAddSubjectModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="modalSubjectName" placeholder="Subject Name">
+                </div>
+                <div class="form-group">
+                    <input type="number" id="modalTotalClasses" placeholder="Total Classes" min="1" max="200">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="hideAddSubjectModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addSubjectFromModal()">Add Subject</button>
             </div>
         </div>
     </div>
